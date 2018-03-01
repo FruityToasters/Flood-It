@@ -1,0 +1,4 @@
+misha,22,medium
+not me,20,medium
+gggg,20,medium
+m,19,medium
