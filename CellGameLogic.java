@@ -3,6 +3,7 @@
  * Game where you click on a color and the top right cell changes to that color then you click on another color and the top right cell and all the cells that are touching that cell that have the same color change to the coor that you clicked on and so on...
  */
 import java.awt.event.*;
+import java.io.IOException;
 import java.util.*;
 import java.awt.*;
 
@@ -11,11 +12,15 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 public class CellGameLogic extends CellFrame implements MouseListener {
+	public static Leaderboard l;
+	public static Player p;
 	private static final long serialVersionUID = 8319933255121639927L;
 	ArrayList<Cell> activeCells = new ArrayList<Cell>();
+	public static String difficulty;
 	//ArrayList that holds the active cells. Active cells are the cells that ones that get added to the ones that change colours on click
 	static JFrame frame;
 	static int intTurn; 
+	static boolean gameOver = false;
 	//Holds the number of turns that user took
 	Random rnd = new Random();
 	//Random number generator
@@ -37,10 +42,11 @@ public class CellGameLogic extends CellFrame implements MouseListener {
 	}
 
 	@SuppressWarnings("resource")
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException{
+		//System.out.println(l.medPlayers);
 		Scanner scan = new Scanner(System.in);
 		out("Would you like easy, medium or hard?");
-		String difficulty = "";
+		difficulty = "";
 		do  {
 			difficulty = scan.nextLine();
 		} while (!(difficulty.equalsIgnoreCase("easy") || difficulty.equalsIgnoreCase("medium") || difficulty.equalsIgnoreCase("hard")));
@@ -66,17 +72,26 @@ public class CellGameLogic extends CellFrame implements MouseListener {
 	}
 
 	@Override
-	public void mouseClicked(MouseEvent e) {
-		intTurn += 1;
-		//each time a label is clicked, turns increase by 1
-		setActiveColors((Cell) e.getSource());
-		// al the active cells get the color of the cell that is clicked
-		addCellNeighbors();
+	public void mouseClicked(MouseEvent e){
+		if (gameOver == false) {
+			intTurn += 1;
+			//each time a label is clicked, turns increase by 1
+			setActiveColors((Cell) e.getSource());
+			// al the active cells get the color of the cell that is clicked
+			addCellNeighbors();
+		}
 		if (checkWin()) {
+			gameOver = true;
 			//if user wins:
 			JOptionPane.showMessageDialog(null, "YOU DID IT. Your score : " + (intTurn) 
 					+ "\n(The lower the better!)");
+			try {
+				gameOver();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 			t.scheduleAtFixedRate(colourFlash, 0, 50);
+			
 			
 		}
 	}
@@ -92,6 +107,14 @@ public class CellGameLogic extends CellFrame implements MouseListener {
             	LabelArray[0][0].setBackground(cancerColors[rnd.nextInt(cancerColors.length)]);
           	  	c.setBackground(cancerColors[rnd.nextInt(cancerColors.length)]);
           	  	setWinColours(color);
+          	  	
+          	  	if (colourBooleans.contains(false) == false) {
+          	  		cancerColors[cancerColors.length - 1] = Color.green;
+          	  	}
+          	  	
+          	  	for (int i = 0; i < LabelArray[0].length; i++) {
+          	  		
+          	  	}
             }
             intTime -= 1;
             if (intTime == 0) {
@@ -99,6 +122,24 @@ public class CellGameLogic extends CellFrame implements MouseListener {
             }
         }
 	};
+	
+	public static void gameOver() throws IOException{
+		System.out.println(Player.parsePlayer("hhh,29,hard"));
+		l = new Leaderboard();
+		p = new Player();
+		p.score = intTurn;
+		System.out.println("Please enter your name:");
+		Scanner scan = new Scanner(System.in);
+		String name = scan.nextLine();
+		scan.close();
+		p.name = name;
+		p.difficulty = difficulty;
+		
+		l.loadBoard();
+		l.add(p);
+		l.saveBoard();
+		l.printBoard();
+	}
 	
 	public void getColourBooleans(Color c) {
 		colourBooleans.clear();
@@ -188,7 +229,7 @@ public class CellGameLogic extends CellFrame implements MouseListener {
 			}
 		}
 		
-		for (int i = 10; i <= 14; i++) {
+		for (int i = 10; i <= 13; i++) {
 			winCells.add(LabelArray[4][i]);
 			if (LabelArray[4][i].getBackground() == c) {
 				colourBooleans.add(true);
@@ -204,14 +245,14 @@ public class CellGameLogic extends CellFrame implements MouseListener {
 			colourBooleans.add(false);
 		}
 		
-		for (int i = 13; i <= 14; i++) {
-			winCells.add(LabelArray[6][i]);
-			if (LabelArray[6][i].getBackground() == c) {
-				colourBooleans.add(true);
-			} else {
-				colourBooleans.add(false);
-			}
+	
+		winCells.add(LabelArray[6][13]);
+		if (LabelArray[6][13].getBackground() == c) {
+			colourBooleans.add(true);
+		} else {
+			colourBooleans.add(false);
 		}
+		
 		
 		winCells.add(LabelArray[7][14]);
 		if (LabelArray[7][14].getBackground() == c) {
@@ -220,7 +261,7 @@ public class CellGameLogic extends CellFrame implements MouseListener {
 			colourBooleans.add(false);
 		}
 		
-		for (int i = 10; i <= 14; i++) {
+		for (int i = 10; i <= 13; i++) {
 			winCells.add(LabelArray[8][i]);
 			if (LabelArray[8][i].getBackground() == c) {
 				colourBooleans.add(true);
@@ -254,23 +295,16 @@ public class CellGameLogic extends CellFrame implements MouseListener {
 			}
 		}
 		
-		winCells.add(LabelArray[13][12]);
-		if (LabelArray[13][12].getBackground() == c) {
+		winCells.add(LabelArray[13][11]);
+		if (LabelArray[13][11].getBackground() == c) {
 			colourBooleans.add(true);
 		} else {
 			colourBooleans.add(false);
 		}
 		
-		winCells.add(LabelArray[14][12]);
-		if (LabelArray[14][12].getBackground() == c) {
-			colourBooleans.add(true);
-		} else {
-			colourBooleans.add(false);
-		}
-		
-		for (int i = 12; i <= 14; i++) {
-			winCells.add(LabelArray[15][i]);
-			if (LabelArray[15][i].getBackground() == c) {
+		for (int i = 11; i <= 14; i++) {
+			winCells.add(LabelArray[14][i]);
+			if (LabelArray[14][i].getBackground() == c) {
 				colourBooleans.add(true);
 			} else {
 				colourBooleans.add(false);
