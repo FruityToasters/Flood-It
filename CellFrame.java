@@ -7,7 +7,7 @@ import javax.swing.*;
 @SuppressWarnings("serial")
 public class CellFrame extends JFrame{
 	
-	static Cell label = new Cell();
+	static Cell label; 
 	//Cell that the LabelArray will originate from
 	static int intArraysize;
 	//holds the size of the array
@@ -21,9 +21,10 @@ public class CellFrame extends JFrame{
 			Color.red, Color.yellow, Color.cyan, Color.white,
 			Color.magenta, Color.green, Color.orange, Color.yellow, Color.cyan, Color.black};
 	//Bright colors that will flash at the end
-	public CellFrame(String name) {
+	public CellFrame(String name, String dif) {
 		//the JFrame (only the GUI)
 		super(name);
+		label = new Cell(dif);
 		setBackground(Color.gray);
 		//setLocation(100, 100);
 		mypanel.setLayout(null);
