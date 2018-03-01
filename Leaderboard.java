@@ -26,9 +26,23 @@ public class Leaderboard {
 	public void printBoard() {
 		System.out.println("Leaderboard:\n==================");
 		
-		
-		for (int i = 0; i < players.size(); i++) {
-			System.out.println(players.get(i));
+		System.out.println("Hard mode: ");
+			for (Player p : players) {
+				if (p.difficulty.equalsIgnoreCase("Hard")) {
+					System.out.println(p.toString().substring(0, p.toString().length() - 5));
+				}
+			}
+		System.out.println("\nMedium mode: ");
+			for (Player p : players) {
+				if (p.difficulty.equalsIgnoreCase("Medium")) {
+					System.out.println(p.toString().substring(0, p.toString().length() - 7));
+			}
+		}
+		System.out.println("\nEasy mode");
+		for (Player p : players) {
+			if (p.difficulty.equalsIgnoreCase("Easy")) {
+				System.out.println(p.toString().substring(0, p.toString().length() - 5));
+			}
 		}
 		
 	}
@@ -36,9 +50,6 @@ public class Leaderboard {
 	public void saveBoard() throws IOException {
 		FileUtils.deleteQuietly(ldb);
 		FileUtils.writeLines(new File("P:/ICS3U/ColorDomination/ldb.txt"), players);
-		for (Player p : players) {
-			System.out.println(p);
-		}
 	}
 	
 	public void sortList() {
