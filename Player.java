@@ -1,32 +1,28 @@
-import java.util.ArrayList;
 
 public class Player {
-	Deck deck;
-	int num;
-	String ape;
-	boolean canGo;
 	String name;
+	int score;
+	String difficulty;
 	
 	public Player() {
-		this.deck = new Deck(3); 
-		this.num = 0;
-		this.ape = "";
-		this.canGo = true;
-		this.name = "Player " + this.num;
+		
 	}
 	
-	public Player(int n) {
-		this.deck = new Deck(3); 
-		this.num = n;
-		this.ape = "";
-		this.canGo = true;
-		this.name = "Player " + this.num;
+	public String toString() {
+		return (this.name + "," + this.score + "," + this.difficulty);
 	}
 	
-	public void printApe() {
-		System.out.println(this.name + ", you have: " + this.ape.toUpperCase());
+	public static Player parsePlayer(String s) {
+		Player p = new Player();
+					String[] playerSplit = s.split(",");
+					p.name = playerSplit[0];
+					p.score = Integer.parseInt(playerSplit[1]);
+					p.difficulty = playerSplit[2];
+		return p;
 	}
 	
-	
+	public boolean equals(Player p) {
+		return (p.name.equals(this.name) && p.difficulty.equals(this.difficulty));
+	}
 
 }
