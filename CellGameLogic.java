@@ -27,7 +27,7 @@ public class CellGameLogic extends CellFrame implements MouseListener {
 	Timer t = new Timer();
 	//Timer
 	public CellGameLogic(String name) { //Constructor
-		super(name);
+		super(name, difficulty);
 		//Loop adds mouselisteners to each cell in LabelArray
 		for (int i = 0; i < LabelArray[0].length; i++) {
 			for( int j = 0; j < LabelArray[1].length; j++) {
@@ -37,7 +37,7 @@ public class CellGameLogic extends CellFrame implements MouseListener {
 		LabelArray[0][0].isActive = true;
 		//sets the top right cell active right away
 		addCellNeighbors();
-		//if any other cells around top righ cell are the same color, they change color
+		//if any other cells around top right cell are the same color, they change color
 		
 	}
 
@@ -60,7 +60,7 @@ public class CellGameLogic extends CellFrame implements MouseListener {
 		}
 		difficulty = difficulty.toLowerCase();
 		//setBoardSize(boardSize);
-		LabelArray = label.toLabelArray(intArraysize,  intArraysize);
+		LabelArray = Cell.toLabelArray(intArraysize,  intArraysize, difficulty);
 		//sets label array size to what the user chose
 		intTurn = 0;
 		//turns start at 0
@@ -124,7 +124,6 @@ public class CellGameLogic extends CellFrame implements MouseListener {
 	};
 	
 	public static void gameOver() throws IOException{
-		System.out.println(Player.parsePlayer("hhh,29,hard"));
 		l = new Leaderboard();
 		p = new Player();
 		p.score = intTurn;
