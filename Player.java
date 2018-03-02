@@ -3,9 +3,24 @@ public class Player {
 	String name;
 	int score;
 	String difficulty;
+	String stars;
 	
 	public Player() {
 		
+	}
+	
+	public void getStars() {
+		if (this.difficulty.equalsIgnoreCase("easy")) {
+			if (this.score <= 6) {
+				this.stars = "Three stars! ***";
+			} else if (this.score > 6 && this.score <= 8) {
+				this.stars = "Two stars! **";
+			} else {
+				this.stars = "Only one star *";
+			}
+		} else if (this.difficulty.equalsIgnoreCase("medium")) {
+			
+		}
 	}
 	
 	public String toString() {
