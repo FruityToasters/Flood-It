@@ -15,19 +15,19 @@ public class CellGameLogic extends CellFrame implements MouseListener {
 	public static Leaderboard l;
 	public static Player p;
 	private static final long serialVersionUID = 8319933255121639927L;
-	ArrayList<Cell> activeCells = new ArrayList<Cell>();
+
 	public static String difficulty;
 	//ArrayList that holds the active cells. Active cells are the cells that ones that get added to the ones that change colours on click
 	static JFrame frame;
 	static int intTurn; 
 	static boolean gameOver = false;
-	//Holds the number of turns that user took
+	static //Holds the number of turns that user took
 	Random rnd = new Random();
 	//Random number generator
 	Timer t = new Timer();
 	//Timer
 	public CellGameLogic(String name) { //Constructor
-		super(name, difficulty);
+		super(name);
 		//Loop adds mouselisteners to each cell in LabelArray
 		for (int i = 0; i < LabelArray[0].length; i++) {
 			for( int j = 0; j < LabelArray[1].length; j++) {
@@ -51,17 +51,12 @@ public class CellGameLogic extends CellFrame implements MouseListener {
 			difficulty = scan.nextLine();
 		} while (!(difficulty.equalsIgnoreCase("easy") || difficulty.equalsIgnoreCase("medium") || difficulty.equalsIgnoreCase("hard")));
 		//user sets their level of difficulty, which is the size of the board
-		if (difficulty.equalsIgnoreCase("Easy")) {
-			setBoardSize(10);
-		} else if (difficulty.equalsIgnoreCase("Medium")) {
-			setBoardSize(20);
-		} else if (difficulty.equalsIgnoreCase("Hard")) {
-			setBoardSize(30);
-		}
+		setBoardSize(20);
 		difficulty = difficulty.toLowerCase();
 		//setBoardSize(boardSize);
-		LabelArray = Cell.toLabelArray(intArraysize,  intArraysize, difficulty);
+		LabelArray = label.toLabelArray(intArraysize,  intArraysize);
 		//sets label array size to what the user chose
+		colourBoard(difficulty);
 		intTurn = 0;
 		//turns start at 0
 		frame = new CellGameLogic("Color Domination Game");
@@ -70,6 +65,37 @@ public class CellGameLogic extends CellFrame implements MouseListener {
 		//sets the size of the frame proportional to the array of labels
 		frame.setVisible(true);
 	}
+	
+	public static void colourBoard(String s) {
+		int rndIndex = 0;
+		Color[] easyColours = {new Color(226, 43, 43), new Color(249, 152, 32), 
+				new Color(104, 18, 150)
+				};
+		Color[] medColours = {new Color(226, 43, 43), new Color(249, 152, 32), 
+				new Color(104, 18, 150), new Color(216, 47, 157), new Color(60, 128, 216)};
+		
+		Color[] hardColours = {new Color(226, 43, 43), new Color(249, 152, 32), 
+				new Color(247, 233, 76), new Color(43, 229, 83), new Color(60, 128, 216), new Color(104, 18, 150), new Color(216, 47, 157)};
+		
+		
+		for (Cell[] c : LabelArray) {
+			for (Cell cell : c) {
+				rnd = new Random();
+				if (s.equalsIgnoreCase("easy")) {
+					rndIndex = rnd.nextInt(easyColours.length);
+					cell.setBackground(easyColours[rndIndex]);
+				} else if (s.equalsIgnoreCase("medium")) {
+					rndIndex = rnd.nextInt(medColours.length);
+					cell.setBackground(medColours[rndIndex]);
+				} else if (s.equalsIgnoreCase("hard")) {
+					rndIndex = rnd.nextInt(hardColours.length);
+					cell.setBackground(hardColours[rndIndex]);
+				}
+				
+				}
+			}
+		}
+	
 
 	@Override
 	public void mouseClicked(MouseEvent e){
@@ -81,10 +107,11 @@ public class CellGameLogic extends CellFrame implements MouseListener {
 			addCellNeighbors();
 		}
 		if (checkWin()) {
+			setActiveColors((Cell) e.getSource());
+			addCellNeighbors();
 			gameOver = true;
 			//if user wins:
-			JOptionPane.showMessageDialog(null, "YOU DID IT. Your score : " + (intTurn) 
-					+ "\n(The lower the better!)");
+			frame = new FlashyColourBoard(getName(), activeCells);
 			try {
 				gameOver();
 			} catch (IOException e1) {
@@ -95,7 +122,7 @@ public class CellGameLogic extends CellFrame implements MouseListener {
 			
 		}
 	}
-	ArrayList<Boolean> colourBooleans = new ArrayList<Boolean>();
+	/*ArrayList<Boolean> colourBooleans = new ArrayList<Boolean>();
 	ArrayList<Cell> winCells = new ArrayList<Cell>();
 	public TimerTask colourFlash = new TimerTask() {
 		//timer task that makes all the cells ranomly change to a bright color
@@ -122,24 +149,30 @@ public class CellGameLogic extends CellFrame implements MouseListener {
             }
         }
 	};
-	
+	*/
 	public static void gameOver() throws IOException{
 		l = new Leaderboard();
 		p = new Player();
 		p.score = intTurn;
+		p.difficulty = difficulty;
+		p.name = "";
+		p.getStars();
+		JOptionPane.showMessageDialog(null, "YOU DID IT. Your score : " + (intTurn) 
+				+ "\n(The lower the better!)\n" + p.stars);
 		System.out.println("Please enter your name:");
 		Scanner scan = new Scanner(System.in);
 		String name = scan.nextLine();
 		scan.close();
 		p.name = name;
-		p.difficulty = difficulty;
+
 		
 		l.loadBoard();
 		l.add(p);
 		l.saveBoard();
+		//l.sortList();
 		l.printBoard();
 	}
-	
+	/*
 	public void getColourBooleans(Color c) {
 		colourBooleans.clear();
 		winCells.clear();
@@ -318,7 +351,7 @@ public class CellGameLogic extends CellFrame implements MouseListener {
 			}
 		}
 	}
-	
+	*/
 	public void setActiveColors(Cell curLabel) {
 		//sets the background color of all active cells to the backcolor of the cell given as a parameter
 		Color currentColor = ((JLabel) curLabel).getBackground();
