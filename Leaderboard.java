@@ -6,7 +6,8 @@ import org.apache.commons.io.*;
 public class Leaderboard {
 	List<Player> players;
 	//P:/ICS3U/ColorDomination/ldb.txt
-	File ldb = new File("C:/Users/"+ System.getProperty("user.name") + "/Documents/ldb.txt");
+	//File ldb = new File("C:/Users/"+ System.getProperty("user.name") + "/Documents/ldb.txt");
+	File ldb = new File("P:/ICS3U/ColorDomination/ldb.txt");
 	public Leaderboard() throws IOException {
 		players = new ArrayList<Player>();
 	}
@@ -24,7 +25,13 @@ public class Leaderboard {
 				}
 			}
 			
-			players.add(index, p);
+			if (index == - 1) {
+				players.add(p);
+			} else {
+				players.add(index, p);
+			}
+			
+			
 		}
 		
 	}
@@ -53,7 +60,7 @@ public class Leaderboard {
 					System.out.println(p.toString().substring(0, p.toString().length() - 7));
 			}
 		}
-		System.out.println("\nEasy mode");
+		System.out.println("\nEasy mode:");
 		for (Player p : players) {
 			if (p.difficulty.equalsIgnoreCase("Easy")) {
 				System.out.println(p.toString().substring(0, p.toString().length() - 5));
@@ -64,7 +71,7 @@ public class Leaderboard {
 	
 	public void saveBoard() throws IOException {
 		FileUtils.deleteQuietly(ldb);
-		FileUtils.writeLines(new File("C:/Users/"+ System.getProperty("user.name") + "/Documents/ldb.txt"), players);
+		FileUtils.writeLines(new File("P:/ICS3U/ColorDomination/ldb.txt"), players);
 	}
 
 }
