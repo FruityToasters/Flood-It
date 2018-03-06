@@ -3,6 +3,7 @@
  * Game where you click on a color and the top right cell changes to that color then you click on another color and the top right cell and all the cells that are touching that cell that have the same color change to the coor that you clicked on and so on...
  */
 import java.awt.event.*;
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.awt.*;
@@ -24,7 +25,7 @@ public class CellGameLogic extends CellFrame implements MouseListener {
 	static //Holds the number of turns that user took
 	Random rnd = new Random();
 	//Random number generator
-	Timer t = new Timer();
+	static Timer t = new Timer();
 	//Timer
 	public CellGameLogic(String name) { //Constructor
 		super(name);
@@ -43,6 +44,11 @@ public class CellGameLogic extends CellFrame implements MouseListener {
 
 	@SuppressWarnings("resource")
 	public static void main(String[] args) throws IOException{
+		File[] f = File.listRoots();
+		
+		for (int i = 0; i < f.length; i++) {
+			System.out.println(f[i]);
+		}
 		//System.out.println(l.medPlayers);
 		Scanner scan = new Scanner(System.in);
 		out("Would you like easy, medium or hard?");
@@ -96,32 +102,32 @@ public class CellGameLogic extends CellFrame implements MouseListener {
 			}
 		}
 	
-
+	static YouWinThread winThread = new YouWinThread(t);
+	
 	@Override
 	public void mouseClicked(MouseEvent e){
 		if (gameOver == false) {
 			intTurn += 1;
 			//each time a label is clicked, turns increase by 1
 			setActiveColors((Cell) e.getSource());
-			// al the active cells get the color of the cell that is clicked
+			//all the active cells get the color of the cell that is clicked
 			addCellNeighbors();
 		}
 		if (checkWin()) {
 			setActiveColors((Cell) e.getSource());
 			addCellNeighbors();
 			gameOver = true;
-			//if user wins:
-			frame = new FlashyColourBoard(getName(), activeCells);
-			try {
-				gameOver();
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-			t.scheduleAtFixedRate(colourFlash, 0, 50);
+			//(new Thread(new CellFrame(this.getName()))).start();
+			
+			winThread.task = colourFlash;
+			winThread.start();
+			
+			
 			
 			
 		}
 	}
+	
 	/*ArrayList<Boolean> colourBooleans = new ArrayList<Boolean>();
 	ArrayList<Cell> winCells = new ArrayList<Cell>();
 	public TimerTask colourFlash = new TimerTask() {
@@ -159,12 +165,17 @@ public class CellGameLogic extends CellFrame implements MouseListener {
 		p.getStars();
 		JOptionPane.showMessageDialog(null, "YOU DID IT. Your score : " + (intTurn) 
 				+ "\n(The lower the better!)\n" + p.stars);
+		
 		System.out.println("Please enter your name:");
 		Scanner scan = new Scanner(System.in);
 		String name = scan.nextLine();
 		scan.close();
 		p.name = name;
 
+		t.cancel();
+		t.purge();
+	
+		winThread.interrupt();
 		
 		l.loadBoard();
 		l.add(p);
@@ -461,7 +472,14 @@ public class CellGameLogic extends CellFrame implements MouseListener {
 			}
 		}
 	}
+	
+	Thread thread = new Thread() {
+		public void run() {
+			
+		}
+	};
 }
+
 /* What was tested:
  * LabelArray - make sure the array of cells works and is shown and every cell in it is clickable
  * setBoardSize - make sure the size stays within 5 and 30 and the label array gets set to the same size
