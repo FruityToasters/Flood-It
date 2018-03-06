@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Timer;
@@ -11,6 +12,7 @@ import javax.swing.*;
 public class CellFrame extends JFrame{
 	Timer t = new Timer();
 	static Cell label = new Cell(); 
+	boolean finallyOver = false;
 	//Cell that the LabelArray will originate from
 	static int intArraysize;
 	//holds the size of the array
@@ -68,12 +70,27 @@ public class CellFrame extends JFrame{
           	  	setWinColours(color);
           	  	
           	  	if (colourBooleans.contains(false) == false) {
-          	  		cancerColors[cancerColors.length - 1] = Color.green;
+          	  	cancerColors[cancerColors.length - 1] = Color.green;
+          	  		for (Cell c2 : activeCells) {
+          	  			//System.out.println("doing it");
+          	  			LabelArray[0][0].setBackground(cancerColors[rnd.nextInt(cancerColors.length)]);
+          	  			c2.setBackground(cancerColors[rnd.nextInt(cancerColors.length - 1)]);
+          	  			setWinColours(color);
+          	  			
+          	  			finallyOver = true;
+          	  		}
+          	  		
+          	  		try {
+						CellGameLogic.gameOver();
+						//this.cancel();
+						return;
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+          	  		return;
           	  	}
           	  	
-          	  	for (int i = 0; i < LabelArray[0].length; i++) {
-          	  		
-          	  	}
             }
             intTime -= 1;
             if (intTime == 0) {
@@ -273,6 +290,5 @@ public class CellFrame extends JFrame{
 			}
 		}
 	}
-
 	
 }
