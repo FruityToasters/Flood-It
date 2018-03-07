@@ -8,9 +8,11 @@ import java.io.IOException;
 import java.util.*;
 import java.awt.*;
 
+import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 public class CellGameLogic extends CellFrame implements MouseListener {
 	public static Leaderboard l;
@@ -181,7 +183,20 @@ public class CellGameLogic extends CellFrame implements MouseListener {
 		l.add(p);
 		l.saveBoard();
 		//l.sortList();
-		l.printBoard();
+		frame.setVisible(false);
+		JFrame f = new JFrame("Leaderboard");
+		JPanel panel = new JPanel();
+		int labelCount = 0;
+		panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));;
+		for (JLabel jl : l.printBoard()) {
+			jl.setLocation(0, labelCount);
+			jl.setVisible(true);
+			panel.add(jl);
+			labelCount += 20;
+		}
+		f.getContentPane().add(panel);
+		f.setVisible(true);
+		//l.printBoard();
 	}
 	/*
 	public void getColourBooleans(Color c) {
