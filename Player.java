@@ -24,12 +24,13 @@ public class Player {
 	}
 	
 	public String toString() {
-		return (this.name + "," + this.score + "," + this.difficulty);
+		return (this.name + ", " + this.score + ", " + this.difficulty);
 	}
 	
 	public static Player parsePlayer(String s) {
 		Player p = new Player();
-					String[] playerSplit = s.split(",");
+		String d = s.replaceAll(" ", "");
+					String[] playerSplit = d.split(",");
 					p.name = playerSplit[0];
 					p.score = Integer.parseInt(playerSplit[1]);
 					p.difficulty = playerSplit[2];
