@@ -1,4 +1,5 @@
 /* 6/5/2017
+ * Fardeen Haque, Eric Yang and Misha Tsirlin
  * Color domination game (based on flood-it)
  * Game where you click on a color and the top right cell changes to that color then you click on another color and the top right cell and all the cells that are touching that cell that have the same color change to the coor that you clicked on and so on...
  */
@@ -9,6 +10,7 @@ import java.util.*;
 import java.awt.*;
 
 import javax.swing.BoxLayout;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -44,21 +46,23 @@ public class CellGameLogic extends CellFrame implements MouseListener {
 		
 	}
 
-	@SuppressWarnings("resource")
 	public static void main(String[] args) throws IOException{
-		File[] f = File.listRoots();
 		
-		for (int i = 0; i < f.length; i++) {
-			System.out.println(f[i]);
-		}
+		JOptionPane.showMessageDialog(null, "Welcome to the game of flood-it, where you can have fun with colours. \n"
+				+ "before you begin, chose a difficulty. Have fun!", "", JOptionPane.PLAIN_MESSAGE);
 		//System.out.println(l.medPlayers);
-		Scanner scan = new Scanner(System.in);
-		out("Would you like easy, medium or hard?");
+		//out("Would you like easy, medium or hard?");
+		String[] difficulties = {"Easy", "Medium", "Hard"};
+		JComboBox<String> box = new JComboBox<String>(difficulties);
 		difficulty = "";
-		do  {
-			difficulty = scan.nextLine();
-		} while (!(difficulty.equalsIgnoreCase("easy") || difficulty.equalsIgnoreCase("medium") || difficulty.equalsIgnoreCase("hard")));
+		try {
+			do  {
+				difficulty = (String) JOptionPane.showInputDialog(null, "Choose your difficulty:", "", JOptionPane.PLAIN_MESSAGE, null, difficulties, "Easy");
+			} while (!(difficulty.equalsIgnoreCase("easy") || difficulty.equalsIgnoreCase("medium") || difficulty.equalsIgnoreCase("hard")) || difficulty == null);
 		//user sets their level of difficulty, which is the size of the board
+		} catch (Exception ex) {
+			System.exit(0);
+		}
 		setBoardSize(20);
 		difficulty = difficulty.toLowerCase();
 		//setBoardSize(boardSize);
@@ -67,10 +71,11 @@ public class CellGameLogic extends CellFrame implements MouseListener {
 		colourBoard(difficulty);
 		intTurn = 0;
 		//turns start at 0
-		frame = new CellGameLogic("Color Domination Game");
+		frame = new CellGameLogic("Flood-it!");
 		frame.setSize(LabelArray[0].length * (LabelArray[0][0].getWidth()) + LabelArray[0][0].getWidth(), 
 				LabelArray[1].length * (LabelArray[0][0].getHeight()) + LabelArray[0][0].getHeight() + 20);
 		//sets the size of the frame proportional to the array of labels
+		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 	}
 	
@@ -108,12 +113,16 @@ public class CellGameLogic extends CellFrame implements MouseListener {
 	
 	@Override
 	public void mouseClicked(MouseEvent e){
+		
 		if (gameOver == false) {
-			intTurn += 1;
-			//each time a label is clicked, turns increase by 1
-			setActiveColors((Cell) e.getSource());
-			//all the active cells get the color of the cell that is clicked
-			addCellNeighbors();
+			if (!(((Cell) e.getSource()).getBackground().equals(LabelArray[0][0].getBackground()))) {
+				intTurn += 1;
+				//each time a label is clicked, turns increase by 1
+				setActiveColors((Cell) e.getSource());
+				//all the active cells get the color of the cell that is clicked
+				addCellNeighbors();
+			}
+			
 		}
 		if (checkWin()) {
 			setActiveColors((Cell) e.getSource());
@@ -129,35 +138,7 @@ public class CellGameLogic extends CellFrame implements MouseListener {
 			
 		}
 	}
-	
-	/*ArrayList<Boolean> colourBooleans = new ArrayList<Boolean>();
-	ArrayList<Cell> winCells = new ArrayList<Cell>();
-	public TimerTask colourFlash = new TimerTask() {
-		//timer task that makes all the cells ranomly change to a bright color
-		int intTime = 10000;
-        public void run() {
-            for (Cell c: activeCells) {
-            	Color color = winColor;
-            	getColourBooleans(color);
-            	LabelArray[0][0].setBackground(cancerColors[rnd.nextInt(cancerColors.length)]);
-          	  	c.setBackground(cancerColors[rnd.nextInt(cancerColors.length)]);
-          	  	setWinColours(color);
-          	  	
-          	  	if (colourBooleans.contains(false) == false) {
-          	  		cancerColors[cancerColors.length - 1] = Color.green;
-          	  	}
-          	  	
-          	  	for (int i = 0; i < LabelArray[0].length; i++) {
-          	  		
-          	  	}
-            }
-            intTime -= 1;
-            if (intTime == 0) {
-          	  return;
-            }
-        }
-	};
-	*/
+
 	public static void gameOver() throws IOException{
 		l = new Leaderboard();
 		p = new Player();
@@ -166,12 +147,14 @@ public class CellGameLogic extends CellFrame implements MouseListener {
 		p.name = "";
 		p.getStars();
 		JOptionPane.showMessageDialog(null, "YOU DID IT. Your score : " + (intTurn) 
-				+ "\n(The lower the better!)\n" + p.stars);
+				+ "\n(The lower the better!)\n" + p.stars, "Congratulations", JOptionPane.PLAIN_MESSAGE);
+	
+		String name;
 		
-		System.out.println("Please enter your name:");
-		Scanner scan = new Scanner(System.in);
-		String name = scan.nextLine();
-		scan.close();
+		do {
+		name = JOptionPane.showInputDialog(null, "", "Please enter your name:", JOptionPane.PLAIN_MESSAGE);
+		} while (name == null || name.length() < 1);
+		
 		p.name = name;
 
 		t.cancel();
@@ -187,197 +170,25 @@ public class CellGameLogic extends CellFrame implements MouseListener {
 		JFrame f = new JFrame("Leaderboard");
 		JPanel panel = new JPanel();
 		int labelCount = 0;
-		panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));;
+		panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
+		
 		for (JLabel jl : l.printBoard()) {
 			jl.setLocation(0, labelCount);
 			jl.setVisible(true);
 			panel.add(jl);
 			labelCount += 20;
 		}
+		
 		f.getContentPane().add(panel);
+		f.setSize(l.size * 5, labelCount + 20);
+		f.setLocationRelativeTo(null);
 		f.setVisible(true);
+		f.toFront();
+		f.setResizable(false);
+		f.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		//l.printBoard();
 	}
-	/*
-	public void getColourBooleans(Color c) {
-		colourBooleans.clear();
-		winCells.clear();
-		
-		for (int i = 4; i <= 6; i++) {
-			winCells.add(LabelArray[4][i]);
-			if (LabelArray[4][i].getBackground() == c) {
-				colourBooleans.add(true); 
-			} else {
-				colourBooleans.add(false);
-			}
-		}
-		
-		for (int i = 6; i <= 8; i++) {
-			winCells.add(LabelArray[5][i]);
-			if (LabelArray[5][i].getBackground() == c) {
-				colourBooleans.add(true);
-			} else {
-				colourBooleans.add(false);
-			}
-		}
-		
-		for (int i = 4; i <= 6; i++) {
-			winCells.add(LabelArray[6][i]);
-			if (LabelArray[6][i].getBackground() == c) {
-				colourBooleans.add(true); 
-			} else {
-				colourBooleans.add(false);
-			}
-		}
-		
-		for (int i = 5; i <= 8; i++) {
-			winCells.add(LabelArray[8][i]);
-			if (LabelArray[8][i].getBackground() == c) {
-				colourBooleans.add(true); 
-			} else {
-				colourBooleans.add(false);
-			}
-		}
-		
-		winCells.add(LabelArray[9][5]);
-		if (LabelArray[9][5].getBackground() == c) {
-			colourBooleans.add(true);
-		} else {
-			colourBooleans.add(false);
-		}
-		
-		winCells.add(LabelArray[9][8]);
-		if (LabelArray[9][8].getBackground() == c) {
-			colourBooleans.add(true);
-		} else {
-			colourBooleans.add(false);
-		}
-		
-		for (int i = 5; i <= 8; i++) {
-			winCells.add(LabelArray[10][i]);
-			if (LabelArray[10][i].getBackground() == c) {
-				colourBooleans.add(true); 
-			} else {
-				colourBooleans.add(false);
-			}
-		}
-		
-		for (int i = 5; i <= 8; i++) {
-			winCells.add(LabelArray[12][i]);
-			if (LabelArray[12][i].getBackground() == c) {
-				colourBooleans.add(true); 
-			} else {
-				colourBooleans.add(false);
-			}
-		}
-		
-		winCells.add(LabelArray[13][8]);
-		if (LabelArray[13][8].getBackground() == c) {
-			colourBooleans.add(true);
-		} else {
-			colourBooleans.add(false);
-		}
-		
-		for (int i = 5; i <= 8; i++) {
-			winCells.add(LabelArray[14][i]);
-			if (LabelArray[14][i].getBackground() == c) {
-				colourBooleans.add(true); 
-			} else {
-				colourBooleans.add(false);
-			}
-		}
-		
-		for (int i = 10; i <= 13; i++) {
-			winCells.add(LabelArray[4][i]);
-			if (LabelArray[4][i].getBackground() == c) {
-				colourBooleans.add(true);
-			} else {
-				colourBooleans.add(false);
-			}
-		}
-		
-		winCells.add(LabelArray[5][14]);
-		if (LabelArray[5][14].getBackground() == c) {
-			colourBooleans.add(true);
-		} else {
-			colourBooleans.add(false);
-		}
-		
-	
-		winCells.add(LabelArray[6][13]);
-		if (LabelArray[6][13].getBackground() == c) {
-			colourBooleans.add(true);
-		} else {
-			colourBooleans.add(false);
-		}
-		
-		
-		winCells.add(LabelArray[7][14]);
-		if (LabelArray[7][14].getBackground() == c) {
-			colourBooleans.add(true);
-		} else {
-			colourBooleans.add(false);
-		}
-		
-		for (int i = 10; i <= 13; i++) {
-			winCells.add(LabelArray[8][i]);
-			if (LabelArray[8][i].getBackground() == c) {
-				colourBooleans.add(true);
-			} else {
-				colourBooleans.add(false);
-			}
-		}
-		
-		for (int i = 12; i <= 14; i++) {
-			winCells.add(LabelArray[10][i]);
-			if (LabelArray[10][i].getBackground() == c) {
-				colourBooleans.add(true);			
-			} else {
-				colourBooleans.add(false);
-			}
-		}
-		
-		winCells.add(LabelArray[10][10]);
-		if (LabelArray[10][10].getBackground() == c) {
-			colourBooleans.add(true);
-		} else {
-			colourBooleans.add(false);
-		}
-		
-		for (int i = 11; i <= 14; i++) {
-			winCells.add(LabelArray[12][i]);
-			if (LabelArray[12][i].getBackground() == c) {
-				colourBooleans.add(true);
-			} else {
-				colourBooleans.add(false);
-			}
-		}
-		
-		winCells.add(LabelArray[13][11]);
-		if (LabelArray[13][11].getBackground() == c) {
-			colourBooleans.add(true);
-		} else {
-			colourBooleans.add(false);
-		}
-		
-		for (int i = 11; i <= 14; i++) {
-			winCells.add(LabelArray[14][i]);
-			if (LabelArray[14][i].getBackground() == c) {
-				colourBooleans.add(true);
-			} else {
-				colourBooleans.add(false);
-			}
-		}
-	}
-	
-	public void setWinColours(Color c) {
-		for (int i = 0; i < winCells.size(); i++) {
-			if (colourBooleans.get(i) == true) {
-				winCells.get(i).setBackground(c);
-			}
-		}
-	}
-	*/
+
 	public void setActiveColors(Cell curLabel) {
 		//sets the background color of all active cells to the backcolor of the cell given as a parameter
 		Color currentColor = ((JLabel) curLabel).getBackground();
@@ -488,11 +299,6 @@ public class CellGameLogic extends CellFrame implements MouseListener {
 		}
 	}
 	
-	Thread thread = new Thread() {
-		public void run() {
-			
-		}
-	};
 }
 
 /* What was tested:
