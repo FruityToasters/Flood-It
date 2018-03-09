@@ -11,8 +11,11 @@ public class Leaderboard {
 	//P:/ICS3U/ColorDomination/ldb.txt
 	//File ldb = new File("C:/Users/"+ System.getProperty("user.name") + "/Documents/ldb.txt");
 	File ldb = new File("ldb.txt");
+	int size;
 	public Leaderboard() throws IOException {
 		players = new ArrayList<Player>();
+		
+		ldb.createNewFile();
 	}
 	
 	public void add(Player p) {
@@ -32,6 +35,10 @@ public class Leaderboard {
 				players.add(p);
 			} else {
 				players.add(index, p);
+			}
+			
+			if (p.toString().length() > size) {
+				size = p.toString().length();
 			}
 			
 			
