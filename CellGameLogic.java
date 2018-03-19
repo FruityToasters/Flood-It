@@ -160,8 +160,6 @@ public class CellGameLogic extends CellFrame implements MouseListener {
 		t.cancel();
 		t.purge();
 	
-		winThread.interrupt();
-		
 		l.loadBoard();
 		l.add(p);
 		l.saveBoard();
@@ -184,7 +182,6 @@ public class CellGameLogic extends CellFrame implements MouseListener {
 		f.setLocationRelativeTo(null);
 		f.setVisible(true);
 		f.toFront();
-		f.setResizable(false);
 		f.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		//l.printBoard();
 	}
@@ -302,6 +299,7 @@ public class CellGameLogic extends CellFrame implements MouseListener {
 }
 
 /* What was tested:
+ * THE GAME:
  * LabelArray - make sure the array of cells works and is shown and every cell in it is clickable
  * setBoardSize - make sure the size stays within 5 and 30 and the label array gets set to the same size
  * AddCellNeighbors - make sure each cell neighbour gets added and no other cells get added
@@ -310,4 +308,16 @@ public class CellGameLogic extends CellFrame implements MouseListener {
  * intTurn - make sure it increases each time
  * Cell.toLabelAray - make sure it generates an array and doesn't cause an error and that the array size is correct
  * ColorArray - made sure all the colors are nice to look at
+ * Different levels work as intended
+ * Doesn't crash on any click
+ * If you keep clicking the same colour multiple times in a row, it doesn't add to the score
+ * 
+ * THE THINGS THAT AREN'T THE GAME:
+ * Doesn't crash when asking for name
+ * Colours stop flashing after 'You Win' message is shown
+ * Player.toString() produces correct output
+ * Player.parsePlayer works
+ * The leaderboard works even if the text file doesn't exist
+ * No name gets cut off the leaderboard, the size adjusts
+ * 
  */
